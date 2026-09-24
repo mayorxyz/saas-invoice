@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { viewportConfig } from '../../lib/motion';
 
@@ -36,7 +36,7 @@ export function TextReveal({ text, className = '', delay = 0 }: { text: string; 
   const words = text.split(' ');
   return (
     <motion.div
-      className={`overflow-hidden ${className}`}
+      className={className}
       initial="hidden"
       whileInView="visible"
       viewport={viewportConfig}
@@ -49,8 +49,8 @@ export function TextReveal({ text, className = '', delay = 0 }: { text: string; 
         {words.map((word, i) => (
           <span key={i} className="overflow-hidden inline-block mr-[0.3em]">
             <motion.span className="inline-block" variants={{
-              hidden: { clipPath: 'inset(100% 0 0 0)', y: 20 },
-              visible: { clipPath: 'inset(0% 0 0 0)', y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }
+              hidden: { y: '100%' },
+              visible: { y: '0%', transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }
             }}>
               {word}
             </motion.span>
@@ -62,15 +62,17 @@ export function TextReveal({ text, className = '', delay = 0 }: { text: string; 
 }
 
 export function AnimatedCounter({ target, suffix = '', prefix = '' }: { target: number; suffix?: string; prefix?: string }) {
-  const [count, setCount] = React.useState(0);
-  const ref = React.useRef<HTMLSpanElement>(null);
-  const hasAnimated = React.useRef(false);
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const hasAnimated = useRef(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') {
       setCount(target);
       return;
     }
+    const el = ref.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !hasAnimated.current) {
@@ -90,7 +92,7 @@ export function AnimatedCounter({ target, suffix = '', prefix = '' }: { target: 
       },
       { threshold: 0.2 }
     );
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(el);
     return () => observer.disconnect();
   }, [target]);
 
@@ -98,13 +100,5 @@ export function AnimatedCounter({ target, suffix = '', prefix = '' }: { target: 
 }
 
 export function NoiseOverlay() {
-  return (
-    <div 
-      className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.025]" 
-      aria-hidden="true"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-      }}
-    />
-  );
+  return null;
 }
