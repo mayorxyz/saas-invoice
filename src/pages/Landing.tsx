@@ -189,9 +189,17 @@ function Hero() {
           <Link to="/contact" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#4F46E5] text-white font-semibold text-sm">
             Start for Free
           </Link>
-          <a href="#how-it-works" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-[#E5E7EB] text-[#0F0F0F] font-semibold text-sm bg-white">
+          <button 
+            onClick={() => {
+              const element = document.getElementById('how-it-works');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-[#E5E7EB] text-[#0F0F0F] font-semibold text-sm bg-white"
+          >
             See how it works
-          </a>
+          </button>
         </motion.div>
 
         <motion.p

@@ -38,18 +38,24 @@ function ContactHero() {
 }
 
 function ContactForm() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit = (data: FormData) => {
-    console.log('Form submitted:', data);
-    setSubmitted(true);
+    setSubmitStatus('submitting');
+    
+    // Simulate API call
+    setTimeout(() => {
+      console.log('Form submitted (demo):', data);
+      setSubmitStatus('success');
+      reset();
+    }, 1000);
   };
 
-  if (submitted) {
+  if (submitStatus === 'success') {
     return (
       <section className="py-16 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
@@ -65,8 +71,14 @@ function ContactForm() {
               <circle cx="85" cy="30" r="8" fill="#D1FAE5" />
               <path d="M82 30l2 2 4-4" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <h3 className="font-display font-bold text-2xl text-[#0F0F0F] mt-6">Message sent!</h3>
-            <p className="mt-2 text-[#6B7280]">We'll reply within 4 hours. Check your inbox.</p>
+            <h3 className="font-display font-bold text-2xl text-[#0F0F0F] mt-6">Message received!</h3>
+            <p className="mt-2 text-[#6B7280]">This is a demo form. In production, we'd reply within 4 hours.</p>
+            <button
+              onClick={() => setSubmitStatus('idle')}
+              className="mt-6 px-6 py-3 rounded-xl bg-[#4F46E5] text-white font-semibold text-sm"
+            >
+              Send another message
+            </button>
           </motion.div>
           <ContactInfo />
         </div>
@@ -81,17 +93,27 @@ function ContactForm() {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6"
           initial="hidden" whileInView="visible" viewport={viewportConfig} variants={fadeUp}
+          noValidate
         >
+          <div className="p-4 bg-[#FEF3C7] border border-[#F59E0B] rounded-lg">
+            <p className="text-sm text-[#92400E]">
+              <strong>Demo mode:</strong> This form doesn't actually send messages. It's for demonstration purposes only.
+            </p>
+          </div>
+
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-[#0F0F0F] mb-2">Full Name</label>
             <input
               id="fullName"
               type="text"
+              autoComplete="name"
+              aria-invalid={errors.fullName ? 'true' : 'false'}
+              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
               {...register('fullName')}
               className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[#0F0F0F] text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
               placeholder="Your full name"
             />
-            {errors.fullName && <p className="mt-1 text-xs text-[#EF4444]">{errors.fullName.message}</p>}
+            {errors.fullName && <p id="fullName-error" className="mt-1 text-xs text-[#EF4444]" role="alert">{errors.fullName.message}</p>}
           </div>
 
           <div>
@@ -99,17 +121,22 @@ function ContactForm() {
             <input
               id="email"
               type="email"
+              autoComplete="email"
+              aria-invalid={errors.email ? 'true' : 'false'}
+              aria-describedby={errors.email ? 'email-error' : undefined}
               {...register('email')}
               className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[#0F0F0F] text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
               placeholder="you@example.com"
             />
-            {errors.email && <p className="mt-1 text-xs text-[#EF4444]">{errors.email.message}</p>}
+            {errors.email && <p id="email-error" className="mt-1 text-xs text-[#EF4444]" role="alert">{errors.email.message}</p>}
           </div>
 
           <div>
             <label htmlFor="subject" className="block text-sm font-medium text-[#0F0F0F] mb-2">Subject</label>
             <select
               id="subject"
+              aria-invalid={errors.subject ? 'true' : 'false'}
+              aria-describedby={errors.subject ? 'subject-error' : undefined}
               {...register('subject')}
               className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[#0F0F0F] text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
             >
@@ -119,7 +146,7 @@ function ContactForm() {
               <option value="feature">Feature Request</option>
               <option value="bug">Bug Report</option>
             </select>
-            {errors.subject && <p className="mt-1 text-xs text-[#EF4444]">{errors.subject.message}</p>}
+            {errors.subject && <p id="subject-error" className="mt-1 text-xs text-[#EF4444]" role="alert">{errors.subject.message}</p>}
           </div>
 
           <div>
@@ -127,18 +154,21 @@ function ContactForm() {
             <textarea
               id="message"
               rows={5}
+              aria-invalid={errors.message ? 'true' : 'false'}
+              aria-describedby={errors.message ? 'message-error' : undefined}
               {...register('message')}
               className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[#0F0F0F] text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] resize-none"
               placeholder="Tell us what's on your mind..."
             />
-            {errors.message && <p className="mt-1 text-xs text-[#EF4444]">{errors.message.message}</p>}
+            {errors.message && <p id="message-error" className="mt-1 text-xs text-[#EF4444]" role="alert">{errors.message.message}</p>}
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-[#4F46E5] text-white font-semibold text-sm"
+            disabled={submitStatus === 'submitting'}
+            className="w-full py-3 rounded-xl bg-[#4F46E5] text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Send Message
+            {submitStatus === 'submitting' ? 'Sending...' : 'Send Message'}
           </button>
         </motion.form>
 
@@ -203,7 +233,7 @@ function ContactInfo() {
           </div>
           <div>
             <p className="text-sm font-medium text-[#0F0F0F]">Twitter</p>
-            <a href="https://twitter.com/invoiceflow" className="text-sm text-[#6B7280]">@invoiceflow</a>
+            <a href="https://twitter.com/invoiceflow" target="_blank" rel="noopener noreferrer" className="text-sm text-[#6B7280]">@invoiceflow</a>
           </div>
         </div>
       </div>

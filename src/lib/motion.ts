@@ -48,3 +48,9 @@ export const mobileSimpleFade = {
 };
 
 export const viewportConfig = { once: true, amount: 0.2 as const };
+
+// Hook to detect reduced motion preference
+export function useReducedMotion(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
