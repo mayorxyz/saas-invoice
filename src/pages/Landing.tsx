@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { SectionBadge, TextReveal } from '../components/ui';
-import { fadeUp, scaleUp, staggerContainer, viewportConfig } from '../lib/motion';
+import { fadeUp, fadeIn, scaleUp, staggerContainer, viewportConfig } from '../lib/motion';
 
 // SVG Illustrations
 function DashboardMockup() {
@@ -162,7 +162,7 @@ function Hero() {
       </div>
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
-        <motion.div initial="hidden" animate="visible" variants={fadeInLocal}>
+        <motion.div initial="hidden" animate="visible" variants={fadeIn}>
           <SectionBadge>Now in Public Beta — Free to start</SectionBadge>
         </motion.div>
 
@@ -217,10 +217,7 @@ function Hero() {
   );
 }
 
-const fadeInLocal = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.8, ease: 'easeOut' } }
-};
+
 
 function LogoStrip() {
   const logos = ['Paystack', 'Flutterwave', 'Selar', 'Techpoint', 'GetFundedAfrica', 'Cowrywise', 'Brass', 'PiggyVest'];
