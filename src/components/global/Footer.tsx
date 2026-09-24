@@ -28,8 +28,8 @@ export function Footer() {
             <ul className="space-y-3">
               <li><Link to="/features" className="text-sm text-gray-400">Features</Link></li>
               <li><Link to="/pricing" className="text-sm text-gray-400">Pricing</Link></li>
-              <li><a href="/login" className="text-sm text-gray-400">Dashboard</a></li>
-              <li><a href="#" className="text-sm text-gray-400">Changelog</a></li>
+              <li><span className="text-sm text-gray-400 opacity-50">Dashboard (Coming Soon)</span></li>
+              <li><span className="text-sm text-gray-400 opacity-50">Changelog</span></li>
             </ul>
           </div>
 
@@ -39,8 +39,8 @@ export function Footer() {
             <ul className="space-y-3">
               <li><Link to="/about" className="text-sm text-gray-400">About</Link></li>
               <li><Link to="/contact" className="text-sm text-gray-400">Contact</Link></li>
-              <li><a href="#" className="text-sm text-gray-400">Privacy Policy</a></li>
-              <li><a href="#" className="text-sm text-gray-400">Terms of Service</a></li>
+              <li><span className="text-sm text-gray-400 opacity-50">Privacy Policy</span></li>
+              <li><span className="text-sm text-gray-400 opacity-50">Terms of Service</span></li>
             </ul>
           </div>
 

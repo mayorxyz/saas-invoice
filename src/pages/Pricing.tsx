@@ -94,15 +94,25 @@ function PricingCards() {
       <div className="max-w-6xl mx-auto">
         {/* Toggle */}
         <div className="flex items-center justify-center gap-4 mb-12">
-          <span className={`text-sm font-medium ${!annual ? 'text-[#0F0F0F]' : 'text-[#6B7280]'}`}>Monthly</span>
+          <span 
+            id="monthly-label"
+            className={`text-sm font-medium ${!annual ? 'text-[#0F0F0F]' : 'text-[#6B7280]'}`}
+          >
+            Monthly
+          </span>
           <button
             onClick={() => setAnnual(!annual)}
+            role="switch"
+            aria-checked={annual}
+            aria-labelledby="monthly-label annual-label"
             className={`relative w-12 h-6 rounded-full ${annual ? 'bg-[#4F46E5]' : 'bg-[#E5E7EB]'}`}
-            aria-label="Toggle annual pricing"
           >
-            <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white ${annual ? 'translate-x-6' : ''}`} />
+            <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${annual ? 'translate-x-6' : ''}`} />
           </button>
-          <span className={`text-sm font-medium ${annual ? 'text-[#0F0F0F]' : 'text-[#6B7280]'}`}>
+          <span 
+            id="annual-label"
+            className={`text-sm font-medium ${annual ? 'text-[#0F0F0F]' : 'text-[#6B7280]'}`}
+          >
             Annual <span className="text-[#10B981] text-xs">(2 months free)</span>
           </span>
         </div>
@@ -183,42 +193,52 @@ function PricingFAQ() {
         </motion.h2>
 
         <div className="space-y-4">
-          {faqs.map((faq, i) => (
-            <motion.div
-              key={i}
-              className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden"
-              initial="hidden" whileInView="visible" viewport={viewportConfig} variants={fadeUp}
-            >
-              <button
-                className="w-full flex items-center justify-between p-6 text-left"
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                aria-expanded={openIndex === i}
+          {faqs.map((faq, i) => {
+            const isOpen = openIndex === i;
+            const buttonId = `faq-button-${i}`;
+            const panelId = `faq-panel-${i}`;
+            return (
+              <motion.div
+                key={i}
+                className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden"
+                initial="hidden" whileInView="visible" viewport={viewportConfig} variants={fadeUp}
               >
-                <span className="font-medium text-[#0F0F0F]">{faq.q}</span>
-                <svg
-                  width="20" height="20" viewBox="0 0 20 20" fill="none"
-                  className={`flex-shrink-0 ml-4 ${openIndex === i ? 'rotate-180' : ''}`}
-                  aria-hidden="true"
+                <button
+                  id={buttonId}
+                  className="w-full flex items-center justify-between p-6 text-left"
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
                 >
-                  <path d="M5 8l5 5 5-5" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-              <AnimatePresence>
-                {openIndex === i && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                  <span className="font-medium text-[#0F0F0F]">{faq.q}</span>
+                  <svg
+                    width="20" height="20" viewBox="0 0 20 20" fill="none"
+                    className={`flex-shrink-0 ml-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
                   >
-                    <div className="px-6 pb-6 text-sm text-[#6B7280]">
-                      {faq.a}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
+                    <path d="M5 8l5 5 5-5" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={buttonId}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="px-6 pb-6 text-sm text-[#6B7280]">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

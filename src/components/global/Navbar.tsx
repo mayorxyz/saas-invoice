@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60);
@@ -12,9 +14,28 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close drawer on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
+
+  // Close drawer on Escape key
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    // Lock body scroll
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
 
   const navLinks = [
     { label: 'Features', to: '/features' },
@@ -54,22 +75,32 @@ export function Navbar() {
           </div>
 
           <button
+            ref={toggleRef}
             className="md:hidden flex flex-col gap-1.5 p-2"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-drawer"
           >
-            <span className={`block w-5 h-0.5 bg-[#0F0F0F] ${mobileOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-[#0F0F0F] ${mobileOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-[#0F0F0F] ${mobileOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-[#0F0F0F] transition-transform ${mobileOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-[#0F0F0F] transition-opacity ${mobileOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-[#0F0F0F] transition-transform ${mobileOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </button>
         </div>
       </nav>
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div className="absolute inset-0 bg-black/20" onClick={() => setMobileOpen(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-lg p-8 flex flex-col gap-6 pt-20">
+        <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true" id="mobile-drawer">
+          <div 
+            className="absolute inset-0 bg-black/20" 
+            onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
+          />
+          <div 
+            ref={drawerRef}
+            className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-lg p-8 flex flex-col gap-6 pt-20"
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.to}
